@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catalog - BookStore</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #fafafa;
+        color: #1a1a1a;
+        line-height: 1.6;
+      }
+      nav {
+        background: #fff;
+        border-bottom: 1px solid #e5e5e5;
+        padding: 0 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 64px;
+      }
+      .logo {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        text-decoration: none;
+      }
+      .logo span {
+        color: #6366f1;
+      }
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+      .nav-links a {
+        color: #525252;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+      .nav-links a.active {
+        color: #1a1a1a;
+      }
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .page-header {
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+      .page-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .page-header p {
+        color: #737373;
+        font-size: 1rem;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.625rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        border: none;
+      }
+      .btn-primary {
+        background: #1a1a1a;
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        color: #1a1a1a;
+        border: 1px solid #e5e5e5;
+      }
+      .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+      }
+      .category-card {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .category-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
+        border-color: #d4d4d4;
+      }
+      .category-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1rem;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+      }
+      .category-card:nth-child(1) .category-icon {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+      }
+      .category-card:nth-child(2) .category-icon {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      }
+      .category-card:nth-child(3) .category-icon {
+        background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+      }
+      .category-card:nth-child(4) .category-icon {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+      }
+      .category-card:nth-child(5) .category-icon {
+        background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+      }
+      .category-card:nth-child(6) .category-icon {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+      }
+      .category-card h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      .category-card p {
+        color: #737373;
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+      }
+      .book-count {
+        font-size: 0.8125rem;
+        color: #525252;
+        padding: 0.375rem 0.75rem;
+        background: #f5f5f5;
+        border-radius: 20px;
+        display: inline-block;
+      }
+      .featured-section {
+        margin-top: 3rem;
+      }
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+      .section-header h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+      .featured-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+      }
+      .featured-card {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .featured-image {
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+      }
+      .featured-card:nth-child(1) .featured-image {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+      }
+      .featured-card:nth-child(2) .featured-image {
+        background: linear-gradient(135deg, #f093fb, #f5576c);
+      }
+      .featured-card:nth-child(3) .featured-image {
+        background: linear-gradient(135deg, #4facfe, #00f2fe);
+      }
+      .featured-card:nth-child(4) .featured-image {
+        background: linear-gradient(135deg, #43e97b, #38f9d7);
+      }
+      .featured-info {
+        padding: 1rem;
+      }
+      .featured-title {
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+      }
+      .featured-author {
+        font-size: 0.8125rem;
+        color: #737373;
+        margin-bottom: 0.5rem;
+      }
+      .featured-price {
+        font-weight: 600;
+        color: #1a1a1a;
+      }
+      footer {
+        border-top: 1px solid #e5e5e5;
+        padding: 2rem;
+        margin-top: 2rem;
+        background: #fff;
+      }
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        color: #737373;
+        font-size: 0.875rem;
+      }
+      @media (max-width: 768px) {
+        .categories-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .featured-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-container">
+        <a href="/" class="logo">Book<span>Store</span></a>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/books/">Books</a></li>
+          <li><a href="/catalog/" class="active">Catalog</a></li>
+          <li><a href="/orders/">Orders</a></li>
+        </ul>
+        <div>
+          <a
+            href="/cart/"
+            style="margin-right: 1rem; color: #525252; text-decoration: none"
+            >🛒 Cart</a
+          >
+          <a href="/customers/" class="btn btn-secondary">Sign In</a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <div class="page-header">
+        <h1>Browse by Category</h1>
+        <p>Explore our collection across different genres and topics</p>
+      </div>
+
+      <div class="categories-grid">
+        {% if categories %} {% for category in categories %}
+        <a
+          href="/books/?category={{ category.id }}"
+          class="category-card"
+          style="text-decoration: none; color: inherit"
+        >
+          <div class="category-icon">📚</div>
+          <h3>{{ category.name }}</h3>
+          <p>{{ category.description|default:"Explore this category" }}</p>
+          <span class="book-count"
+            >{{ category.book_count|default:"0" }} books</span
+          >
+        </a>
+        {% endfor %} {% else %}
+        <a
+          href="/books/?category=fiction"
+          class="category-card"
+          style="text-decoration: none; color: inherit"
+        >
+          <div class="category-icon">📖</div>
+          <h3>Fiction</h3>
+          <p>Novels, short stories, and literary fiction</p>
+          <span class="book-count">150+ books</span>
+        </a>
+        <a
+          href="/books/?category=non-fiction"
+          class="category-card"
+          style="text-decoration: none; color: inherit"
+        >
+          <div class="category-icon">📘</div>
+          <h3>Non-Fiction</h3>
+          <p>Biographies, history, and self-help</p>
+          <span class="book-count">200+ books</span>
+        </a>
+        <a
+          href="/books/?category=romance"
+          class="category-card"
+          style="text-decoration: none; color: inherit"
+        >
+          <div class="category-icon">💕</div>
+          <h3>Romance</h3>
+          <p>Love stories and romantic adventures</p>
+          <span class="book-count">80+ books</span>
+        </a>
+        <a
+          href="/books/?category=technology"
+          class="category-card"
+          style="text-decoration: none; color: inherit"
+        >
+          <div class="category-icon">💻</div>
+          <h3>Technology</h3>
+          <p>Programming, AI, and digital innovation</p>
+          <span class="book-count">120+ books</span>
+        </a>
+        <a
+          href="/books/?category=science"
+          class="category-card"
+          style="text-decoration: none; color: inherit"
+        >
+          <div class="category-icon">🔬</div>
+          <h3>Science</h3>
+          <p>Physics, biology, and natural sciences</p>
+          <span class="book-count">90+ books</span>
+        </a>
+        <a
+          href="/books/?category=children"
+          class="category-card"
+          style="text-decoration: none; color: inherit"
+        >
+          <div class="category-icon">🧒</div>
+          <h3>Children's</h3>
+          <p>Picture books and young readers</p>
+          <span class="book-count">60+ books</span>
+        </a>
+        {% endif %}
+      </div>
+
+      <div class="featured-section">
+        <div class="section-header">
+          <h2>Featured This Month</h2>
+          <a href="/books/" class="btn btn-secondary">View All Books</a>
+        </div>
+        <div class="featured-grid">
+          <div class="featured-card">
+            <div class="featured-image">📖</div>
+            <div class="featured-info">
+              <div class="featured-title">The Midnight Library</div>
+              <div class="featured-author">Matt Haig</div>
+              <div class="featured-price">$16.99</div>
+            </div>
+          </div>
+          <div class="featured-card">
+            <div class="featured-image">📖</div>
+            <div class="featured-info">
+              <div class="featured-title">Atomic Habits</div>
+              <div class="featured-author">James Clear</div>
+              <div class="featured-price">$18.49</div>
+            </div>
+          </div>
+          <div class="featured-card">
+            <div class="featured-image">📖</div>
+            <div class="featured-info">
+              <div class="featured-title">Project Hail Mary</div>
+              <div class="featured-author">Andy Weir</div>
+              <div class="featured-price">$14.99</div>
+            </div>
+          </div>
+          <div class="featured-card">
+            <div class="featured-image">📖</div>
+            <div class="featured-info">
+              <div class="featured-title">The Psychology of Money</div>
+              <div class="featured-author">Morgan Housel</div>
+              <div class="featured-price">$15.99</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-content">
+        <span>© 2026 BookStore. All rights reserved.</span>
+        <span>Built with Django Microservices</span>
+      </div>
+    </footer>
+  </body>
+</html>

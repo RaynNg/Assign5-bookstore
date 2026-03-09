@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In - BookStore</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #fafafa;
+        color: #1a1a1a;
+        line-height: 1.6;
+      }
+      nav {
+        background: #fff;
+        border-bottom: 1px solid #e5e5e5;
+        padding: 0 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 64px;
+      }
+      .logo {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        text-decoration: none;
+      }
+      .logo span {
+        color: #6366f1;
+      }
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+      .nav-links a {
+        color: #525252;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.625rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        border: none;
+      }
+      .btn-primary {
+        background: #1a1a1a;
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        color: #1a1a1a;
+        border: 1px solid #e5e5e5;
+      }
+      .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.8125rem;
+      }
+      .auth-container {
+        max-width: 420px;
+        margin: 2rem auto;
+      }
+      .auth-card {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 16px;
+        padding: 2.5rem;
+      }
+      .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .auth-header h1 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      .auth-header p {
+        color: #737373;
+        font-size: 0.9375rem;
+      }
+      .auth-tabs {
+        display: flex;
+        margin-bottom: 2rem;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .auth-tab {
+        flex: 1;
+        padding: 0.75rem;
+        text-align: center;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #737373;
+        cursor: pointer;
+        background: #fafafa;
+        border: none;
+      }
+      .auth-tab.active {
+        background: #1a1a1a;
+        color: #fff;
+      }
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+      .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #1a1a1a;
+        margin-bottom: 0.5rem;
+      }
+      .form-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        font-size: 0.9375rem;
+        outline: none;
+      }
+      .form-input:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .checkbox-group input {
+        width: 16px;
+        height: 16px;
+      }
+      .checkbox-group label {
+        font-size: 0.875rem;
+        color: #525252;
+      }
+      .submit-btn {
+        width: 100%;
+        padding: 0.875rem;
+        background: #1a1a1a;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .submit-btn:hover {
+        background: #333;
+      }
+      .customers-list {
+        margin-top: 2rem;
+      }
+      .customer-card {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .customer-avatar {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 600;
+        font-size: 1.125rem;
+      }
+      .customer-info {
+        flex: 1;
+      }
+      .customer-name {
+        font-weight: 600;
+        color: #1a1a1a;
+      }
+      .customer-email {
+        font-size: 0.875rem;
+        color: #737373;
+      }
+      footer {
+        border-top: 1px solid #e5e5e5;
+        padding: 2rem;
+        margin-top: 2rem;
+        background: #fff;
+      }
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        color: #737373;
+        font-size: 0.875rem;
+      }
+      #loginForm,
+      #registerForm {
+        display: none;
+      }
+      #loginForm.active,
+      #registerForm.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-container">
+        <a href="/" class="logo">Book<span>Store</span></a>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/books/">Books</a></li>
+          <li><a href="/catalog/">Catalog</a></li>
+          <li><a href="/orders/">Orders</a></li>
+        </ul>
+        <div>
+          <a
+            href="/cart/"
+            style="margin-right: 1rem; color: #525252; text-decoration: none"
+            >🛒 Cart</a
+          >
+          <a href="/customers/" class="btn btn-secondary">Sign In</a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <div class="auth-container">
+        <div class="auth-card">
+          <div class="auth-header">
+            <h1>Welcome</h1>
+            <p>Sign in to your account or create a new one</p>
+          </div>
+
+          <div class="auth-tabs">
+            <button class="auth-tab active" onclick="showForm('login')">
+              Sign In
+            </button>
+            <button class="auth-tab" onclick="showForm('register')">
+              Register
+            </button>
+          </div>
+
+          <form id="loginForm" class="active" onsubmit="loginCustomer(event)">
+            <div id="login-alert"></div>
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input
+                type="email"
+                class="form-input"
+                id="login-email"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-input"
+                id="login-password"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="remember" />
+              <label for="remember">Remember me</label>
+            </div>
+            <button type="submit" class="submit-btn">Sign In</button>
+          </form>
+
+          <form id="registerForm" onsubmit="registerCustomer(event)">
+            <div id="register-alert"></div>
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input
+                type="text"
+                class="form-input"
+                id="reg-name"
+                placeholder="John Doe"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input
+                type="email"
+                class="form-input"
+                id="reg-email"
+                placeholder="john@example.com"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-input"
+                id="reg-password"
+                placeholder="Create a password"
+                required
+              />
+            </div>
+            <button type="submit" class="submit-btn">Create Account</button>
+          </form>
+        </div>
+
+        {% if customers %}
+        <div class="customers-list">
+          <h3 style="margin-bottom: 1rem; font-size: 1.125rem">
+            Registered Customers
+          </h3>
+          {% for customer in customers %}
+          <div class="customer-card">
+            <div class="customer-avatar">
+              {{ customer.name|slice:":2"|upper }}
+            </div>
+            <div class="customer-info">
+              <div class="customer-name">{{ customer.name }}</div>
+              <div class="customer-email">{{ customer.email }}</div>
+            </div>
+            <a href="/cart/{{ customer.id }}/" class="btn btn-sm btn-secondary"
+              >View Cart</a
+            >
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-content">
+        <span>© 2026 BookStore. All rights reserved.</span>
+        <span>Built with Django Microservices</span>
+      </div>
+    </footer>
+
+    <script>
+      function showForm(type) {
+        document.getElementById("loginForm").classList.remove("active");
+        document.getElementById("registerForm").classList.remove("active");
+        document.querySelectorAll(".auth-tab").forEach(function (t) {
+          t.classList.remove("active");
+        });
+        if (type === "login") {
+          document.getElementById("loginForm").classList.add("active");
+          document.querySelectorAll(".auth-tab")[0].classList.add("active");
+        } else {
+          document.getElementById("registerForm").classList.add("active");
+          document.querySelectorAll(".auth-tab")[1].classList.add("active");
+        }
+      }
+
+      function showAlert(elementId, message, type) {
+        const el = document.getElementById(elementId);
+        el.style.padding = "0.75rem 1rem";
+        el.style.borderRadius = "8px";
+        el.style.marginBottom = "1rem";
+        el.style.fontSize = "0.875rem";
+        if (type === "success") {
+          el.style.background = "#d1fae5";
+          el.style.color = "#065f46";
+        } else {
+          el.style.background = "#fee2e2";
+          el.style.color = "#991b1b";
+        }
+        el.textContent = message;
+        setTimeout(function () {
+          el.textContent = "";
+          el.style.padding = "0";
+        }, 3000);
+      }
+
+      async function loginCustomer(e) {
+        e.preventDefault();
+        const email = document.getElementById("login-email").value;
+        const password = document.getElementById("login-password").value;
+        try {
+          const res = await fetch("/api/customers/login/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            localStorage.setItem("customer", JSON.stringify(data.customer));
+            showAlert(
+              "login-alert",
+              "Login successful! Redirecting...",
+              "success",
+            );
+            setTimeout(function () {
+              window.location.href = "/cart/" + data.customer.id + "/";
+            }, 1000);
+          } else {
+            showAlert("login-alert", data.error || "Login failed", "error");
+          }
+        } catch (err) {
+          showAlert("login-alert", "Connection error", "error");
+        }
+      }
+
+      async function registerCustomer(e) {
+        e.preventDefault();
+        const name = document.getElementById("reg-name").value;
+        const email = document.getElementById("reg-email").value;
+        const password = document.getElementById("reg-password").value;
+        try {
+          const res = await fetch("/api/customers/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            showAlert(
+              "register-alert",
+              "Registration successful! Please login.",
+              "success",
+            );
+            document.getElementById("registerForm").reset();
+            setTimeout(function () {
+              showForm("login");
+            }, 1500);
+          } else {
+            showAlert(
+              "register-alert",
+              data.error || JSON.stringify(data),
+              "error",
+            );
+          }
+        } catch (err) {
+          showAlert("register-alert", "Connection error", "error");
+        }
+      }
+    </script>
+  </body>
+</html>

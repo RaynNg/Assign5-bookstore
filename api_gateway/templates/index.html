@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BookStore - Your Online Bookstore</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #fafafa;
+        color: #1a1a1a;
+        line-height: 1.6;
+      }
+      nav {
+        background: #fff;
+        border-bottom: 1px solid #e5e5e5;
+        padding: 0 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 64px;
+      }
+      .logo {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        text-decoration: none;
+      }
+      .logo span {
+        color: #6366f1;
+      }
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+      .nav-links a {
+        color: #525252;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+      .nav-links a:hover {
+        color: #1a1a1a;
+      }
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.625rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        border: none;
+      }
+      .btn-primary {
+        background: #1a1a1a;
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #333;
+      }
+      .btn-secondary {
+        background: #fff;
+        color: #1a1a1a;
+        border: 1px solid #e5e5e5;
+      }
+      .hero {
+        background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+        border-radius: 16px;
+        padding: 4rem;
+        color: #fff;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero h1 {
+        font-size: 2.75rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+      .hero p {
+        font-size: 1.125rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 2rem;
+        max-width: 600px;
+      }
+      .hero-actions {
+        display: flex;
+        gap: 1rem;
+      }
+      .hero .btn-primary {
+        background: #fff;
+        color: #1a1a1a;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+      }
+      .stat-card {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+      }
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a1a1a;
+      }
+      .stat-label {
+        font-size: 0.875rem;
+        color: #737373;
+      }
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+      .section-header h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+      .section-header a {
+        color: #6366f1;
+        text-decoration: none;
+        font-size: 0.875rem;
+      }
+      .categories {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 1rem;
+        margin-bottom: 3rem;
+      }
+      .category-card {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 12px;
+        padding: 1.5rem 1rem;
+        text-align: center;
+        text-decoration: none;
+        color: #1a1a1a;
+        transition: all 0.2s;
+      }
+      .category-card:hover {
+        border-color: #6366f1;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+      }
+      .category-icon {
+        width: 48px;
+        height: 48px;
+        background: #f5f5f5;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.75rem;
+        font-size: 1.5rem;
+      }
+      .category-name {
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+      .featured-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+      }
+      .book-card {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.2s;
+      }
+      .book-card:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        transform: translateY(-4px);
+      }
+      .book-cover {
+        height: 180px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+      }
+      .book-info {
+        padding: 1.25rem;
+      }
+      .book-title {
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 0.5rem;
+      }
+      .book-author {
+        font-size: 0.875rem;
+        color: #737373;
+        margin-bottom: 0.75rem;
+      }
+      .book-price {
+        font-weight: 600;
+        color: #1a1a1a;
+      }
+      .services {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+      }
+      .service-card {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: flex;
+        gap: 1rem;
+      }
+      .service-icon {
+        width: 48px;
+        height: 48px;
+        background: #f5f5f5;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 1.5rem;
+      }
+      .service-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+      .service-desc {
+        font-size: 0.875rem;
+        color: #737373;
+      }
+      footer {
+        border-top: 1px solid #e5e5e5;
+        padding: 2rem;
+        margin-top: 2rem;
+        background: #fff;
+      }
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        color: #737373;
+        font-size: 0.875rem;
+      }
+      @media (max-width: 1024px) {
+        .stats,
+        .featured-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .categories {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      @media (max-width: 768px) {
+        .hero {
+          padding: 2rem;
+        }
+        .hero h1 {
+          font-size: 2rem;
+        }
+        .services {
+          grid-template-columns: 1fr;
+        }
+        .categories {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-container">
+        <a href="/" class="logo">Book<span>Store</span></a>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/books/">Books</a></li>
+          <li><a href="/catalog/">Catalog</a></li>
+          <li><a href="/orders/">Orders</a></li>
+        </ul>
+        <div>
+          <a
+            href="/cart/"
+            style="margin-right: 1rem; color: #525252; text-decoration: none"
+            >🛒 Cart</a
+          >
+          <a href="/customers/" class="btn btn-secondary">Sign In</a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <section class="hero">
+        <h1>Discover Your Next Favorite Book</h1>
+        <p>
+          Explore thousands of books across every genre. From bestsellers to
+          hidden gems, find the perfect read for every mood.
+        </p>
+        <div class="hero-actions">
+          <a href="/books/" class="btn btn-primary">Browse Collection</a>
+          <a
+            href="/customers/"
+            class="btn btn-secondary"
+            style="
+              background: transparent;
+              color: #fff;
+              border-color: rgba(255, 255, 255, 0.3);
+            "
+            >Create Account</a
+          >
+        </div>
+      </section>
+
+      <section class="stats">
+        <div class="stat-card">
+          <div class="stat-value">10K+</div>
+          <div class="stat-label">Books Available</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">500+</div>
+          <div class="stat-label">Authors</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">50K+</div>
+          <div class="stat-label">Happy Customers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">4.9</div>
+          <div class="stat-label">Average Rating</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-header">
+          <h2>Browse Categories</h2>
+          <a href="/catalog/">View All →</a>
+        </div>
+        <div class="categories">
+          <a href="/books/?category=fiction" class="category-card"
+            ><div class="category-icon">📚</div>
+            <span class="category-name">Fiction</span></a
+          >
+          <a href="/books/?category=science" class="category-card"
+            ><div class="category-icon">🔬</div>
+            <span class="category-name">Science</span></a
+          >
+          <a href="/books/?category=tech" class="category-card"
+            ><div class="category-icon">💻</div>
+            <span class="category-name">Technology</span></a
+          >
+          <a href="/books/?category=history" class="category-card"
+            ><div class="category-icon">🏛️</div>
+            <span class="category-name">History</span></a
+          >
+          <a href="/books/?category=business" class="category-card"
+            ><div class="category-icon">💼</div>
+            <span class="category-name">Business</span></a
+          >
+          <a href="/books/?category=art" class="category-card"
+            ><div class="category-icon">🎨</div>
+            <span class="category-name">Art</span></a
+          >
+        </div>
+      </section>
+
+      <section>
+        <div class="section-header">
+          <h2>Featured Books</h2>
+          <a href="/books/">View All →</a>
+        </div>
+        <div class="featured-grid">
+          <div class="book-card">
+            <div
+              class="book-cover"
+              style="
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              "
+            >
+              📖
+            </div>
+            <div class="book-info">
+              <div class="book-title">Sample Book</div>
+              <div class="book-author">Author Name</div>
+              <div class="book-price">$19.99</div>
+            </div>
+          </div>
+          <div class="book-card">
+            <div
+              class="book-cover"
+              style="
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+              "
+            >
+              📖
+            </div>
+            <div class="book-info">
+              <div class="book-title">Another Book</div>
+              <div class="book-author">Writer Name</div>
+              <div class="book-price">$24.99</div>
+            </div>
+          </div>
+          <div class="book-card">
+            <div
+              class="book-cover"
+              style="
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+              "
+            >
+              📖
+            </div>
+            <div class="book-info">
+              <div class="book-title">Great Read</div>
+              <div class="book-author">Famous Author</div>
+              <div class="book-price">$29.99</div>
+            </div>
+          </div>
+          <div class="book-card">
+            <div
+              class="book-cover"
+              style="
+                background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+              "
+            >
+              📖
+            </div>
+            <div class="book-info">
+              <div class="book-title">Must Read</div>
+              <div class="book-author">Popular Writer</div>
+              <div class="book-price">$14.99</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-header"><h2>Why Choose Us</h2></div>
+        <div class="services">
+          <div class="service-card">
+            <div class="service-icon">🚀</div>
+            <div>
+              <div class="service-title">Fast Delivery</div>
+              <div class="service-desc">Free shipping on orders over $50</div>
+            </div>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">🔒</div>
+            <div>
+              <div class="service-title">Secure Payment</div>
+              <div class="service-desc">100% secure transactions</div>
+            </div>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">💬</div>
+            <div>
+              <div class="service-title">24/7 Support</div>
+              <div class="service-desc">Always ready to help you</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-content">
+        <span>© 2026 BookStore. All rights reserved.</span>
+        <span>Built with Django Microservices</span>
+      </div>
+    </footer>
+  </body>
+</html>

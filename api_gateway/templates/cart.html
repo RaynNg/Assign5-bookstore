@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Cart - BookStore</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #fafafa;
+        color: #1a1a1a;
+        line-height: 1.6;
+      }
+      nav {
+        background: #fff;
+        border-bottom: 1px solid #e5e5e5;
+        padding: 0 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 64px;
+      }
+      .logo {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        text-decoration: none;
+      }
+      .logo span {
+        color: #6366f1;
+      }
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+      .nav-links a {
+        color: #525252;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .page-header {
+        margin-bottom: 2rem;
+      }
+      .page-header h1 {
+        font-size: 1.75rem;
+        font-weight: 600;
+      }
+      .page-header p {
+        color: #737373;
+        font-size: 0.9375rem;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.625rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        border: none;
+      }
+      .btn-primary {
+        background: #1a1a1a;
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        color: #1a1a1a;
+        border: 1px solid #e5e5e5;
+      }
+      .cart-container {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 2rem;
+        align-items: start;
+      }
+      .cart-items {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid #e5e5e5;
+        overflow: hidden;
+      }
+      .cart-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e5e5e5;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .cart-header h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+      }
+      .cart-header span {
+        color: #737373;
+        font-size: 0.875rem;
+      }
+      .cart-item {
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        gap: 1rem;
+        border-bottom: 1px solid #f5f5f5;
+      }
+      .cart-item:last-child {
+        border-bottom: none;
+      }
+      .item-image {
+        width: 80px;
+        height: 100px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+      .item-details {
+        flex: 1;
+      }
+      .item-title {
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 0.25rem;
+      }
+      .item-meta {
+        font-size: 0.8125rem;
+        color: #737373;
+        margin-bottom: auto;
+      }
+      .item-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 0.75rem;
+      }
+      .quantity-control {
+        display: flex;
+        align-items: center;
+        border: 1px solid #e5e5e5;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .quantity-btn {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: #fff;
+        cursor: pointer;
+        font-size: 1rem;
+        color: #525252;
+      }
+      .quantity-btn:hover {
+        background: #f5f5f5;
+      }
+      .quantity-value {
+        width: 40px;
+        text-align: center;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-left: 1px solid #e5e5e5;
+        border-right: 1px solid #e5e5e5;
+        padding: 0.5rem 0;
+      }
+      .remove-btn {
+        color: #dc2626;
+        font-size: 0.8125rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+      }
+      .remove-btn:hover {
+        background: #fef2f2;
+      }
+      .item-price {
+        text-align: right;
+      }
+      .item-price .price {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1a1a1a;
+      }
+      .item-price .unit {
+        font-size: 0.75rem;
+        color: #737373;
+      }
+      .order-summary {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid #e5e5e5;
+        padding: 1.5rem;
+        position: sticky;
+        top: 88px;
+      }
+      .summary-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1.25rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e5e5e5;
+      }
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+        font-size: 0.9375rem;
+      }
+      .summary-row.total {
+        font-weight: 600;
+        font-size: 1.125rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e5e5;
+      }
+      .summary-label {
+        color: #525252;
+      }
+      .summary-value {
+        color: #1a1a1a;
+      }
+      .checkout-btn {
+        width: 100%;
+        padding: 0.875rem;
+        background: #1a1a1a;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        cursor: pointer;
+        margin-top: 1rem;
+      }
+      .checkout-btn:hover {
+        background: #333;
+      }
+      .secure-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        color: #737373;
+        font-size: 0.8125rem;
+      }
+      .continue-shopping {
+        margin-top: 1rem;
+        text-align: center;
+      }
+      .continue-shopping a {
+        color: #6366f1;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+      .empty-cart {
+        padding: 4rem 2rem;
+        text-align: center;
+      }
+      .empty-cart h3 {
+        font-size: 1.25rem;
+        color: #525252;
+        margin-bottom: 0.5rem;
+      }
+      .empty-cart p {
+        color: #737373;
+        margin-bottom: 1.5rem;
+      }
+      footer {
+        border-top: 1px solid #e5e5e5;
+        padding: 2rem;
+        margin-top: 2rem;
+        background: #fff;
+      }
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        color: #737373;
+        font-size: 0.875rem;
+      }
+      @media (max-width: 900px) {
+        .cart-container {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-container">
+        <a href="/" class="logo">Book<span>Store</span></a>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/books/">Books</a></li>
+          <li><a href="/catalog/">Catalog</a></li>
+          <li><a href="/orders/">Orders</a></li>
+        </ul>
+        <div>
+          <a
+            href="/cart/"
+            style="
+              margin-right: 1rem;
+              color: #1a1a1a;
+              text-decoration: none;
+              font-weight: 500;
+            "
+            >🛒 Cart</a
+          >
+          <a href="/customers/" class="btn btn-secondary">Sign In</a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <div class="page-header">
+        <h1>Shopping Cart</h1>
+        <p>Review your items before checkout</p>
+      </div>
+
+      {% if items %}
+      <div class="cart-container">
+        <div class="cart-items">
+          <div class="cart-header">
+            <h2>Cart Items</h2>
+            <span>{{ items|length }} items</span>
+          </div>
+          {% for item in items %}
+          <div class="cart-item">
+            <div class="item-image">📖</div>
+            <div class="item-details">
+              <span class="item-title"
+                >{{ item.book_title|default:"Book" }} #{{ item.book_id }}</span
+              >
+              <span class="item-meta">Book ID: {{ item.book_id }}</span>
+              <div class="item-actions">
+                <div class="quantity-control">
+                  <button class="quantity-btn">−</button>
+                  <span class="quantity-value">{{ item.quantity }}</span>
+                  <button class="quantity-btn">+</button>
+                </div>
+                <button class="remove-btn">Remove</button>
+              </div>
+            </div>
+            <div class="item-price">
+              <div class="price">${{ item.subtotal|default:"0.00" }}</div>
+              <div class="unit">${{ item.unit_price|default:"0.00" }} each</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="order-summary">
+          <h3 class="summary-title">Order Summary</h3>
+          <div class="summary-row">
+            <span class="summary-label">Subtotal</span
+            ><span class="summary-value">${{ subtotal }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Shipping</span
+            ><span class="summary-value">$5.99</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Tax</span
+            ><span class="summary-value">${{ tax }}</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span><span>${{ total }}</span>
+          </div>
+          <button class="checkout-btn">Proceed to Checkout</button>
+          <div class="secure-badge">🔒 Secure checkout</div>
+          <div class="continue-shopping">
+            <a href="/books/">← Continue Shopping</a>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="cart-items">
+        <div class="empty-cart">
+          <div style="font-size: 4rem; margin-bottom: 1rem">🛒</div>
+          <h3>Your cart is empty</h3>
+          <p>Looks like you haven't added any books yet</p>
+          <a href="/books/" class="btn btn-primary">Browse Books</a>
+        </div>
+      </div>
+      {% endif %}
+    </main>
+
+    <footer>
+      <div class="footer-content">
+        <span>© 2026 BookStore. All rights reserved.</span>
+        <span>Built with Django Microservices</span>
+      </div>
+    </footer>
+  </body>
+</html>

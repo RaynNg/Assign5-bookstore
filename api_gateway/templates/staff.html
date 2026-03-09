@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Staff Portal - BookStore</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #fafafa;
+        color: #1a1a1a;
+        line-height: 1.6;
+      }
+      nav {
+        background: #1a1a1a;
+        padding: 0 2rem;
+      }
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 64px;
+      }
+      .logo {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #fff;
+        text-decoration: none;
+      }
+      .logo span {
+        color: #6366f1;
+      }
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+      .nav-links a {
+        color: #a3a3a3;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+      .nav-links a.active {
+        color: #fff;
+      }
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .page-header {
+        margin-bottom: 2rem;
+      }
+      .page-header h1 {
+        font-size: 1.75rem;
+        font-weight: 600;
+      }
+      .page-header p {
+        color: #737373;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.625rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        border: none;
+      }
+      .btn-primary {
+        background: #6366f1;
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        color: #1a1a1a;
+        border: 1px solid #e5e5e5;
+      }
+      .btn-danger {
+        background: #dc2626;
+        color: #fff;
+      }
+      .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8125rem;
+      }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 400px 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .card-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e5e5e5;
+        background: #fafafa;
+      }
+      .card-header h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+      }
+      .card-body {
+        padding: 1.5rem;
+      }
+      .form-group {
+        margin-bottom: 1rem;
+      }
+      .form-group label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: #525252;
+      }
+      .form-control {
+        width: 100%;
+        padding: 0.625rem 0.875rem;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        font-size: 0.875rem;
+      }
+      .form-control:focus {
+        outline: none;
+        border-color: #6366f1;
+      }
+      .alert {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+      }
+      .alert-success {
+        background: #d1fae5;
+        color: #065f46;
+      }
+      .alert-error {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .staff-info {
+        display: none;
+        padding: 1rem;
+        background: #f0fdf4;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+      }
+      .staff-info.show {
+        display: block;
+      }
+      .staff-name {
+        font-weight: 600;
+        color: #065f46;
+      }
+      .books-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .books-table th,
+      .books-table td {
+        padding: 0.875rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid #f5f5f5;
+      }
+      .books-table th {
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: #737373;
+        text-transform: uppercase;
+      }
+      .books-table tr:hover {
+        background: #fafafa;
+      }
+      .book-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal.show {
+        display: flex;
+      }
+      .modal-content {
+        background: #fff;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 500px;
+      }
+      .modal-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e5e5e5;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .modal-header h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+      }
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #737373;
+      }
+      .modal-body {
+        padding: 1.5rem;
+      }
+      .modal-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #e5e5e5;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+      }
+      footer {
+        border-top: 1px solid #e5e5e5;
+        padding: 2rem;
+        margin-top: 2rem;
+        background: #fff;
+      }
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        color: #737373;
+        font-size: 0.875rem;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-container">
+        <a href="/" class="logo">Book<span>Store</span> Staff</a>
+        <ul class="nav-links">
+          <li><a href="/">Store Front</a></li>
+          <li><a href="/staff/" class="active">Staff Portal</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main>
+      <div class="page-header">
+        <h1>Staff Portal</h1>
+        <p>Login to manage books</p>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <div class="card" id="login-card">
+            <div class="card-header">
+              <h2>Staff Login</h2>
+            </div>
+            <div class="card-body">
+              <div id="login-alert"></div>
+              <div class="staff-info" id="staff-info">
+                <span>Logged in as: </span
+                ><span class="staff-name" id="staff-name"></span>
+                <button
+                  class="btn btn-sm btn-secondary"
+                  onclick="logout()"
+                  style="margin-left: 1rem"
+                >
+                  Logout
+                </button>
+              </div>
+              <form id="login-form" onsubmit="login(event)">
+                <div class="form-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="login-email"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Password</label>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="login-password"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  style="width: 100%"
+                >
+                  Login
+                </button>
+              </form>
+              <hr
+                style="
+                  margin: 1.5rem 0;
+                  border: none;
+                  border-top: 1px solid #e5e5e5;
+                "
+              />
+              <p
+                style="font-size: 0.875rem; color: #737373; margin-bottom: 1rem"
+              >
+                Don't have an account?
+              </p>
+              <form id="register-form" onsubmit="register(event)">
+                <div class="form-group">
+                  <label>Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="reg-name"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="reg-email"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Password</label>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="reg-password"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-secondary"
+                  style="width: 100%"
+                >
+                  Register as Staff
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div
+            class="card-header"
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <h2>Book Management</h2>
+            <button class="btn btn-primary btn-sm" onclick="openAddModal()">
+              + Add Book
+            </button>
+          </div>
+          <div class="card-body" style="padding: 0">
+            <table class="books-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Price</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="books-tbody">
+                {% for book in books %}
+                <tr>
+                  <td>{{ book.id }}</td>
+                  <td>{{ book.title }}</td>
+                  <td>{{ book.author }}</td>
+                  <td>${{ book.price }}</td>
+                  <td class="book-actions">
+                    <button
+                      class="btn btn-sm btn-secondary"
+                      data-id="{{ book.id }}"
+                      data-title="{{ book.title }}"
+                      data-author="{{ book.author }}"
+                      data-price="{{ book.price }}"
+                      data-isbn="{{ book.isbn }}"
+                      onclick="openEditModalFromBtn(this)"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      class="btn btn-sm btn-danger"
+                      onclick="deleteBook(book.id)"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td
+                    colspan="5"
+                    style="text-align: center; padding: 2rem; color: #737373"
+                  >
+                    No books found. Add your first book!
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal" id="book-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modal-title">Add New Book</h3>
+          <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div id="modal-alert"></div>
+          <form id="book-form">
+            <input type="hidden" id="book-id" />
+            <div class="form-group">
+              <label>Title</label>
+              <input
+                type="text"
+                class="form-control"
+                id="book-title"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label>Author</label>
+              <input
+                type="text"
+                class="form-control"
+                id="book-author"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label>Price</label>
+              <input
+                type="number"
+                step="0.01"
+                class="form-control"
+                id="book-price"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label>ISBN</label>
+              <input type="text" class="form-control" id="book-isbn" />
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal()">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="saveBook()">
+            Save Book
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-content">
+        <span>© 2026 BookStore. All rights reserved.</span>
+        <span>Staff Portal</span>
+      </div>
+    </footer>
+
+    <script>
+      let currentStaff = null;
+
+      // Check if already logged in
+      const saved = localStorage.getItem("staff");
+      if (saved) {
+        currentStaff = JSON.parse(saved);
+        showLoggedIn();
+      }
+
+      function showLoggedIn() {
+        document.getElementById("staff-info").classList.add("show");
+        document.getElementById("staff-name").textContent = currentStaff.name;
+        document.getElementById("login-form").style.display = "none";
+      }
+
+      function logout() {
+        localStorage.removeItem("staff");
+        currentStaff = null;
+        document.getElementById("staff-info").classList.remove("show");
+        document.getElementById("login-form").style.display = "block";
+      }
+
+      async function login(e) {
+        e.preventDefault();
+        const email = document.getElementById("login-email").value;
+        const password = document.getElementById("login-password").value;
+
+        try {
+          const res = await fetch("/api/staff/login/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            currentStaff = data.staff;
+            localStorage.setItem("staff", JSON.stringify(currentStaff));
+            showLoggedIn();
+            showAlert("login-alert", "Login successful!", "success");
+          } else {
+            showAlert("login-alert", data.error || "Login failed", "error");
+          }
+        } catch (err) {
+          showAlert("login-alert", "Connection error", "error");
+        }
+      }
+
+      async function register(e) {
+        e.preventDefault();
+        const name = document.getElementById("reg-name").value;
+        const email = document.getElementById("reg-email").value;
+        const password = document.getElementById("reg-password").value;
+
+        try {
+          const res = await fetch("/api/staff/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            showAlert(
+              "login-alert",
+              "Registration successful! Please login.",
+              "success",
+            );
+            document.getElementById("register-form").reset();
+          } else {
+            showAlert(
+              "login-alert",
+              data.error || JSON.stringify(data),
+              "error",
+            );
+          }
+        } catch (err) {
+          showAlert("login-alert", "Connection error", "error");
+        }
+      }
+
+      function showAlert(elementId, message, type) {
+        const el = document.getElementById(elementId);
+        el.className = "alert alert-" + type;
+        el.textContent = message;
+        el.style.display = "block";
+        setTimeout(() => (el.style.display = "none"), 3000);
+      }
+
+      function openAddModal() {
+        if (!currentStaff) {
+          showAlert("login-alert", "Please login first", "error");
+          return;
+        }
+        document.getElementById("modal-title").textContent = "Add New Book";
+        document.getElementById("book-id").value = "";
+        document.getElementById("book-form").reset();
+        document.getElementById("book-modal").classList.add("show");
+      }
+
+      function openEditModal(id, title, author, price, isbn) {
+        if (!currentStaff) {
+          showAlert("login-alert", "Please login first", "error");
+          return;
+        }
+        document.getElementById("modal-title").textContent = "Edit Book";
+        document.getElementById("book-id").value = id;
+        document.getElementById("book-title").value = title;
+        document.getElementById("book-author").value = author;
+        document.getElementById("book-price").value = price;
+        document.getElementById("book-isbn").value = isbn;
+        document.getElementById("book-modal").classList.add("show");
+      }
+
+      function openEditModalFromBtn(btn) {
+        openEditModal(
+          btn.dataset.id,
+          btn.dataset.title,
+          btn.dataset.author,
+          btn.dataset.price,
+          btn.dataset.isbn,
+        );
+      }
+
+      function closeModal() {
+        document.getElementById("book-modal").classList.remove("show");
+      }
+
+      async function saveBook() {
+        if (!currentStaff) {
+          showAlert("modal-alert", "Please login first", "error");
+          return;
+        }
+
+        const id = document.getElementById("book-id").value;
+        const book = {
+          title: document.getElementById("book-title").value,
+          author: document.getElementById("book-author").value,
+          price: document.getElementById("book-price").value,
+          isbn: document.getElementById("book-isbn").value,
+        };
+
+        try {
+          const url = id
+            ? "/api/staff/manage-book/" + id + "/"
+            : "/api/staff/manage-book/";
+          const method = id ? "PUT" : "POST";
+          const res = await fetch(url, {
+            method: method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(book),
+          });
+          if (res.ok) {
+            closeModal();
+            location.reload();
+          } else {
+            const data = await res.json();
+            showAlert("modal-alert", data.error || "Failed to save", "error");
+          }
+        } catch (err) {
+          showAlert("modal-alert", "Connection error", "error");
+        }
+      }
+
+      async function deleteBook(id) {
+        if (!currentStaff) {
+          showAlert("login-alert", "Please login first", "error");
+          return;
+        }
+        if (!confirm("Are you sure you want to delete this book?")) return;
+
+        try {
+          const res = await fetch("/api/staff/manage-book/" + id + "/", {
+            method: "DELETE",
+          });
+          if (res.ok || res.status === 204) {
+            location.reload();
+          }
+        } catch (err) {
+          alert("Failed to delete book");
+        }
+      }
+    </script>
+  </body>
+</html>

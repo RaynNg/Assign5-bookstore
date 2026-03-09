@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Books - BookStore</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #fafafa;
+        color: #1a1a1a;
+        line-height: 1.6;
+      }
+      nav {
+        background: #fff;
+        border-bottom: 1px solid #e5e5e5;
+        padding: 0 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 64px;
+      }
+      .logo {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        text-decoration: none;
+      }
+      .logo span {
+        color: #6366f1;
+      }
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+      .nav-links a {
+        color: #525252;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: #1a1a1a;
+      }
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .page-header {
+        margin-bottom: 2rem;
+      }
+      .page-header h1 {
+        font-size: 1.75rem;
+        font-weight: 600;
+      }
+      .page-header p {
+        color: #737373;
+        font-size: 0.9375rem;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.625rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        border: none;
+      }
+      .btn-primary {
+        background: #1a1a1a;
+        color: #fff;
+      }
+      .btn-secondary {
+        background: #fff;
+        color: #1a1a1a;
+        border: 1px solid #e5e5e5;
+      }
+      .books-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 2rem;
+      }
+      .search-input {
+        padding: 0.625rem 1rem;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        width: 240px;
+        outline: none;
+      }
+      .search-input:focus {
+        border-color: #6366f1;
+      }
+      .grid {
+        display: grid;
+        gap: 1.5rem;
+      }
+      .grid-cols-4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .book-card {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.2s;
+      }
+      .book-card:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        transform: translateY(-4px);
+      }
+      .book-cover {
+        height: 200px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+      }
+      .book-info {
+        padding: 1.25rem;
+      }
+      .book-category {
+        font-size: 0.75rem;
+        color: #6366f1;
+        font-weight: 500;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+      }
+      .book-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 0.25rem;
+      }
+      .book-author {
+        font-size: 0.875rem;
+        color: #737373;
+        margin-bottom: 0.75rem;
+      }
+      .book-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 0.75rem;
+        border-top: 1px solid #f5f5f5;
+      }
+      .book-price {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #1a1a1a;
+      }
+      .rating {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.8125rem;
+        color: #737373;
+      }
+      .add-to-cart-btn {
+        width: 100%;
+        margin-top: 1rem;
+        background: #1a1a1a;
+        color: #fff;
+        border: none;
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .add-to-cart-btn:hover {
+        background: #333;
+      }
+      .stock-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 500;
+        margin-top: 0.5rem;
+        display: inline-block;
+      }
+      .stock-in {
+        background: #ecfdf5;
+        color: #065f46;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #737373;
+      }
+      .empty-state h3 {
+        font-size: 1.125rem;
+        color: #525252;
+        margin-bottom: 0.5rem;
+      }
+      footer {
+        border-top: 1px solid #e5e5e5;
+        padding: 2rem;
+        margin-top: 2rem;
+        background: #fff;
+      }
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        color: #737373;
+        font-size: 0.875rem;
+      }
+      @media (max-width: 1024px) {
+        .grid-cols-4 {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      @media (max-width: 768px) {
+        .grid-cols-4 {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 480px) {
+        .grid-cols-4 {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-container">
+        <a href="/" class="logo">Book<span>Store</span></a>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/books/" class="active">Books</a></li>
+          <li><a href="/catalog/">Catalog</a></li>
+          <li><a href="/orders/">Orders</a></li>
+        </ul>
+        <div>
+          <a
+            href="/cart/"
+            style="margin-right: 1rem; color: #525252; text-decoration: none"
+            >🛒 Cart</a
+          >
+          <a href="/customers/" class="btn btn-secondary">Sign In</a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <div class="books-header">
+        <div class="page-header">
+          <h1>Browse Books</h1>
+          <p>{{ books|length }} books available</p>
+        </div>
+        <div style="display: flex; gap: 1rem">
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search books..."
+            id="searchInput"
+          />
+          <select class="search-input" style="width: auto">
+            <option>All Categories</option>
+            <option>Fiction</option>
+            <option>Non-Fiction</option>
+            <option>Science</option>
+            <option>Technology</option>
+          </select>
+        </div>
+      </div>
+
+      {% if books %}
+      <div class="grid grid-cols-4" id="booksGrid">
+        {% for book in books %}
+        <div class="book-card">
+          <div class="book-cover">📖</div>
+          <div class="book-info">
+            <span class="book-category"
+              >{{ book.category|default:"General" }}</span
+            >
+            <h3 class="book-title">{{ book.title }}</h3>
+            <p class="book-author">
+              by {{ book.author|default:"Unknown Author" }}
+            </p>
+            <div class="book-meta">
+              <span class="book-price">${{ book.price }}</span>
+              <span class="rating">⭐ {{ book.rating|default:"4.5" }}</span>
+            </div>
+            <span class="stock-badge stock-in">In Stock</span>
+            <button class="add-to-cart-btn" onclick="addToCart(book.id)">
+              Add to Cart
+            </button>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <h3>No books available</h3>
+        <p>Check back later for new arrivals</p>
+      </div>
+      {% endif %}
+    </main>
+
+    <footer>
+      <div class="footer-content">
+        <span>© 2026 BookStore. All rights reserved.</span>
+        <span>Built with Django Microservices</span>
+      </div>
+    </footer>
+
+    <script>
+      function addToCart(bookId) {
+        alert("Added book " + bookId + " to cart");
+      }
+      document
+        .getElementById("searchInput")
+        .addEventListener("input", function (e) {
+          var search = e.target.value.toLowerCase();
+          var cards = document.querySelectorAll(".book-card");
+          cards.forEach(function (card) {
+            var title = card
+              .querySelector(".book-title")
+              .textContent.toLowerCase();
+            card.style.display = title.includes(search) ? "" : "none";
+          });
+        });
+    </script>
+  </body>
+</html>
