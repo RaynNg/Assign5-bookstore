@@ -1,4 +1,11 @@
 services:
+  frontend-webapp:
+    build: ./frontend-service
+    ports:
+      - "3000:8000"
+    depends_on:
+      - api-gateway
+
   api-gateway:
     build: ./api_gateway
     ports:
