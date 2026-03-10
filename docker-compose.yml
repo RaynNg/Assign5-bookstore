@@ -7,7 +7,7 @@ services:
       - api-gateway
 
   api-gateway:
-    build: ./api_gateway
+    build: ./api-gateway
     ports:
       - "8000:8000"
     depends_on:
