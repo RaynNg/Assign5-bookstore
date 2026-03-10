@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 import requests
 import json
@@ -16,6 +16,43 @@ SHIP_SERVICE_URL = "http://ship-service:8000"
 PAY_SERVICE_URL = "http://pay-service:8000"
 COMMENT_SERVICE_URL = "http://comment-rate-service:8000"
 RECOMMENDER_SERVICE_URL = "http://recommender-ai-service:8000"
+
+
+def proxy_request(service_url, path, request):
+    url = f"{service_url.rstrip('/')}/{path.lstrip('/')}"
+    headers = {k: v for k, v in request.headers.items() if k.lower() != "host"}
+
+    try:
+        response = requests.request(
+            method=request.method,
+            url=url,
+            headers=headers,
+            params=request.GET,
+            data=request.body,
+            cookies=request.COOKIES,
+            allow_redirects=False,
+        )
+
+        proxy_response = HttpResponse(
+            content=response.content,
+            status=response.status_code,
+            content_type=response.headers.get("Content-Type", "application/json"),
+        )
+
+        excluded_headers = {
+            "content-type",
+            "content-length",
+            "content-encoding",
+            "transfer-encoding",
+            "connection",
+        }
+        for key, value in response.headers.items():
+            if key.lower() not in excluded_headers:
+                proxy_response[key] = value
+
+        return proxy_response
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({"error": f"Service unavailable: {str(e)}"}, status=503)
 
 
 # Customer endpoints

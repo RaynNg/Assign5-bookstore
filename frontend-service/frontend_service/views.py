@@ -134,3 +134,15 @@ def proxy_request(service_url, path, request):
         return JsonResponse({"error": str(e)}, status=500)
 
 
+# Đừng quên import csrf_exempt nếu trên đầu file chưa có (hiện tại file của bạn đã có rồi)
+
+
+@csrf_exempt
+def api_gateway_proxy(request, endpoint):
+    """
+    Hứng mọi request bắt đầu bằng /api/ từ Frontend (JS)
+    và đẩy ngầm sang container api-gateway qua mạng nội bộ Docker.
+    """
+    API_GATEWAY_URL = "http://api-gateway:8000"
+    # Gọi hàm proxy_request có sẵn của bạn để chuyển tiếp
+    return proxy_request(API_GATEWAY_URL, f"api/{endpoint}", request)

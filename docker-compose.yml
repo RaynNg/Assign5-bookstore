@@ -23,57 +23,95 @@ services:
       - comment-rate-service
       - recommender-ai-service
 
+  db_mysql:
+    image: mysql:8.0
+    container_name: mysql_bookstore
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./mysql-init:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+
   customer-service:
     build: ./customer-service
     ports:
       - "8001:8000"
+    depends_on:
+      - db_mysql
 
   book-service:
     build: ./book-service
     ports:
       - "8002:8000"
+    depends_on:
+      - db_mysql
 
   cart-service:
     build: ./cart-service
     ports:
       - "8003:8000"
+    depends_on:
+      - db_mysql
 
   staff-service:
     build: ./staff-service
     ports:
       - "8004:8000"
+    depends_on:
+      - db_mysql
 
   manager-service:
     build: ./manager-service
     ports:
       - "8005:8000"
+    depends_on:
+      - db_mysql
 
   catalog-service:
     build: ./catalog-service
     ports:
       - "8006:8000"
+    depends_on:
+      - db_mysql
 
   order-service:
     build: ./order-service
     ports:
       - "8007:8000"
+    depends_on:
+      - db_mysql
 
   ship-service:
     build: ./ship-service
     ports:
       - "8008:8000"
+    depends_on:
+      - db_mysql
 
   pay-service:
     build: ./pay-service
     ports:
       - "8009:8000"
+    depends_on:
+      - db_mysql
 
   comment-rate-service:
     build: ./comment-rate-service
     ports:
       - "8010:8000"
+    depends_on:
+      - db_mysql
 
   recommender-ai-service:
     build: ./recommender-ai-service
     ports:
       - "8011:8000"
+    depends_on:
+      - db_mysql
+
+# PHẦN NÀY BẮT BUỘC PHẢI CÓ ĐỂ DOCKER TẠO VOLUME
+volumes:
+  mysql_data:

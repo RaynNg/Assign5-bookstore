@@ -11,4 +11,5 @@ urlpatterns = [
     path("orders/", views.orders_page, name="orders"),
     path("catalog/", views.catalog_page, name="catalog"),
     path("staff/", views.staff_page, name="staff"),
+    path("api/<path:endpoint>", views.api_gateway_proxy),
 ]

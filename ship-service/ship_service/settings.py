@@ -49,10 +49,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "ship_service.wsgi.application"
 
+# Ví dụ cấu hình cho book-service/book_service/settings.py
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ship_db',      # ĐỔI TÊN NÀY CHO TỪNG SERVICE (customer_db, order_db...)
+        'USER': 'root',
+        'PASSWORD': 'rootpassword',
+        'HOST': 'db_mysql',     # Gọi đúng tên service database trong docker-compose
+        'PORT': '3306',
     }
 }
 
