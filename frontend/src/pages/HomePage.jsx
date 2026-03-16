@@ -129,7 +129,7 @@ export default function HomePage() {
                   className="bg-white rounded-xl p-6 text-center shadow-sm hover:shadow-md transition-shadow border border-gray-100"
                 >
                   <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-3xl">📚</span>
+                    <span className="text-3xl">{catalog.icon || "📚"}</span>
                   </div>
                   <h3 className="font-medium text-gray-800">{catalog.name}</h3>
                 </Link>
