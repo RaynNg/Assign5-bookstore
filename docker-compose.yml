@@ -162,6 +162,16 @@ services:
     depends_on:
       - api-gateway
 
+  # ─────────────────── Admin Dashboard ───────────────────
+  admin-dashboard:
+    build: ./admin-dashboard
+    ports:
+      - "3001:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://api-gateway:8000
+    depends_on:
+      - api-gateway
+
   # ─────────────────── API Gateway ───────────────────
   api-gateway:
     build: ./api-gateway
