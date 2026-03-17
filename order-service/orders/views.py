@@ -1,15 +1,26 @@
 import os
 import requests
+from django.http import JsonResponse
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Order, OrderItem
 from .serializers import OrderSerializer, CreateOrderSerializer
+from .saga import OrderSagaOrchestrator
 
 CART_SERVICE_URL = os.environ.get("CART_SERVICE_URL", "http://cart-service:8000")
 BOOK_SERVICE_URL = os.environ.get("BOOK_SERVICE_URL", "http://book-service:8000")
-PAY_SERVICE_URL = os.environ.get("PAY_SERVICE_URL", "http://pay-service:8000")
-SHIP_SERVICE_URL = os.environ.get("SHIP_SERVICE_URL", "http://ship-service:8000")
+
+
+def health_check(request):
+    """Health check endpoint."""
+    try:
+        from django.db import connection
+        connection.ensure_connection()
+        db_status = "ok"
+    except Exception:
+        db_status = "error"
+    return JsonResponse({"status": "ok", "service": "order-service", "db": db_status})
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -19,8 +30,15 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"])
     def create_from_cart(self, request):
         """
-        Create an order from the customer's cart.
-        Triggers payment and shipping creation.
+        Create an order from the customer's cart using the Saga pattern.
+
+        Saga steps:
+          1. Fetch cart & calculate total
+          2. Create order (status=pending)
+          3. [Saga] Reserve payment via RabbitMQ → pay-service
+          4. [Saga] Reserve shipping via RabbitMQ → ship-service
+          5. Confirm order (status=confirmed) or compensate on failure
+          6. Clear cart & update book stock
         """
         ser = CreateOrderSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
@@ -29,7 +47,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         shipping_method = ser.validated_data["shipping_method"]
         shipping_address = ser.validated_data["shipping_address"]
 
-        # 1. Fetch cart
+        # Step 1: Fetch cart
         try:
             cart_resp = requests.get(
                 f"{CART_SERVICE_URL}/api/carts/by_customer/",
@@ -43,7 +61,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         if not cart_data.get("items"):
             return Response({"error": "Cart is empty"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 2. Fetch book prices and calculate total
+        # Fetch book prices and calculate total
         total = 0
         order_items = []
         for item in cart_data["items"]:
@@ -52,59 +70,34 @@ class OrderViewSet(viewsets.ModelViewSet):
                 book = book_resp.json()
                 price = float(book["price"])
             except requests.RequestException:
-                return Response({"error": f"Failed to fetch book {item['book_id']}"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                return Response(
+                    {"error": f"Failed to fetch book {item['book_id']}"},
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                )
             order_items.append({"book_id": item["book_id"], "quantity": item["quantity"], "price": price})
             total += price * item["quantity"]
 
-        # 3. Create order
+        # Step 2: Create order with status=pending (saga starts)
         order = Order.objects.create(
             customer_id=customer_id,
             total_amount=total,
             payment_method=payment_method,
             shipping_method=shipping_method,
             shipping_address=shipping_address,
-            status="confirmed",
+            status="pending",
         )
         for oi in order_items:
             OrderItem.objects.create(order=order, **oi)
 
-        # 4. Trigger payment
-        try:
-            pay_resp = requests.post(
-                f"{PAY_SERVICE_URL}/api/payments/",
-                json={
-                    "order_id": order.id,
-                    "customer_id": customer_id,
-                    "amount": str(total),
-                    "method": payment_method,
-                },
-                timeout=5,
-            )
-            if pay_resp.status_code == 201:
-                order.payment_id = pay_resp.json().get("id")
-        except requests.RequestException:
-            pass
+        # Steps 3–5: Run saga orchestration (payment → shipping → confirm / compensate)
+        order, error = OrderSagaOrchestrator().execute(
+            order, order_items, customer_id, payment_method, shipping_method, shipping_address
+        )
 
-        # 5. Trigger shipping
-        try:
-            ship_resp = requests.post(
-                f"{SHIP_SERVICE_URL}/api/shipments/",
-                json={
-                    "order_id": order.id,
-                    "customer_id": customer_id,
-                    "address": shipping_address,
-                    "method": shipping_method,
-                },
-                timeout=5,
-            )
-            if ship_resp.status_code == 201:
-                order.shipping_id = ship_resp.json().get("id")
-        except requests.RequestException:
-            pass
+        if error:
+            return Response({"error": error, "order": OrderSerializer(order).data}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-        order.save()
-
-        # 6. Clear cart
+        # Step 6: Clear cart (best-effort)
         try:
             requests.delete(
                 f"{CART_SERVICE_URL}/api/carts/clear/",
@@ -114,7 +107,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         except requests.RequestException:
             pass
 
-        # 7. Update book stock
+        # Step 7: Update book stock (best-effort)
         for oi in order_items:
             try:
                 requests.post(

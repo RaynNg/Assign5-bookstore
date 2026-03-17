@@ -1,4 +1,5 @@
 import os
+import time
 import requests
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -18,7 +19,12 @@ SERVICES = {
     "payments": os.environ.get("PAY_SERVICE_URL", "http://pay-service:8000"),
     "comments": os.environ.get("COMMENT_SERVICE_URL", "http://comment-rate-service:8000"),
     "recommendations": os.environ.get("RECOMMENDER_SERVICE_URL", "http://recommender-ai-service:8000"),
+    "auth": os.environ.get("AUTH_SERVICE_URL", "http://auth-service:8000"),
 }
+
+# Gateway metrics counters
+_request_count = 0
+_start_time = time.time()
 
 
 def health_check(request):
@@ -30,9 +36,13 @@ class GatewayProxyView(APIView):
     """
     Generic proxy view that forwards requests to the appropriate microservice.
     URL pattern: /api/<service_name>/<path>
+    Forwards authenticated user headers injected by JWTAuthMiddleware.
     """
 
     def _proxy(self, request, service_name, path=""):
+        global _request_count
+        _request_count += 1
+
         base_url = SERVICES.get(service_name)
         if not base_url:
             return Response(
@@ -44,10 +54,18 @@ class GatewayProxyView(APIView):
         if not url.endswith("/"):
             url += "/"
 
-        # Forward query params
         params = request.query_params.dict()
 
         headers = {"Content-Type": "application/json"}
+        # Forward authenticated user context to downstream services
+        for meta_key, header_name in (
+            ("HTTP_X_USER_ID", "X-User-Id"),
+            ("HTTP_X_USER_ROLE", "X-User-Role"),
+            ("HTTP_X_USER_NAME", "X-User-Name"),
+        ):
+            value = request.META.get(meta_key)
+            if value:
+                headers[header_name] = value
 
         try:
             method = request.method.lower()
@@ -97,3 +115,40 @@ class ServiceListView(APIView):
 
     def get(self, request):
         return Response({name: url for name, url in SERVICES.items()})
+
+
+class MetricsView(APIView):
+    """
+    GET /api/metrics/
+    Aggregates health status from all registered services and returns gateway stats.
+    """
+
+    def get(self, request):
+        service_health = {}
+        for name, base_url in SERVICES.items():
+            start = time.time()
+            try:
+                resp = requests.get(f"{base_url}/api/health/", timeout=3)
+                latency_ms = round((time.time() - start) * 1000, 2)
+                svc_status = "ok" if resp.status_code == 200 else "degraded"
+            except requests.RequestException:
+                latency_ms = None
+                svc_status = "unreachable"
+
+            service_health[name] = {
+                "status": svc_status,
+                "url": base_url,
+                "latency_ms": latency_ms,
+            }
+
+        uptime_s = round(time.time() - _start_time)
+        return Response(
+            {
+                "gateway": {
+                    "status": "ok",
+                    "uptime_s": uptime_s,
+                    "requests_total": _request_count,
+                },
+                "services": service_health,
+            }
+        )

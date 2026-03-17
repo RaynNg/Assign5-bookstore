@@ -3,10 +3,10 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-ship_service-secret-key-change-in-prod"
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-auth-service-key-change-in-prod")
+JWT_SECRET = os.environ.get("JWT_SECRET", "bookstore-jwt-secret-change-in-production")
 
 DEBUG = True
-
 ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
@@ -18,7 +18,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
-    "shipping.apps.ShippingConfig",
+    "authentication",
 ]
 
 MIDDLEWARE = [
@@ -31,7 +31,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "ship_service.urls"
+ROOT_URLCONF = "auth_service.urls"
 
 TEMPLATES = [
     {
@@ -49,14 +49,13 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "ship_service.wsgi.application"
+WSGI_APPLICATION = "auth_service.wsgi.application"
 
-# Database configuration - PostgreSQL when running in Docker, SQLite for local dev
-if os.environ.get('DB_HOST'):
+if os.environ.get("DB_HOST"):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.environ.get("DB_NAME", "postgres"),
+            "NAME": os.environ.get("DB_NAME", "auth_db"),
             "USER": os.environ.get("DB_USER", "postgres"),
             "PASSWORD": os.environ.get("DB_PASSWORD", "postgres"),
             "HOST": os.environ.get("DB_HOST", "localhost"),
@@ -85,3 +84,13 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.AllowAny",
     ],
 }
+
+# JWT settings
+JWT_ACCESS_TOKEN_LIFETIME_MINUTES = 15
+JWT_REFRESH_TOKEN_LIFETIME_DAYS = 7
+JWT_ALGORITHM = "HS256"
+
+# Downstream service URLs
+CUSTOMER_SERVICE_URL = os.environ.get("CUSTOMER_SERVICE_URL", "http://customer-service:8000")
+STAFF_SERVICE_URL = os.environ.get("STAFF_SERVICE_URL", "http://staff-service:8000")
+MANAGER_SERVICE_URL = os.environ.get("MANAGER_SERVICE_URL", "http://manager-service:8000")

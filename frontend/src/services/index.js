@@ -1,5 +1,11 @@
 import api from './api'
 
+export const authService = {
+    login: (credentials) => api.post('/auth/auth/token/', credentials),
+    refresh: (refreshToken) => api.post('/auth/auth/token/refresh/', { refresh: refreshToken }),
+    logout: (refreshToken) => api.post('/auth/auth/logout/', { refresh: refreshToken }),
+}
+
 export const bookService = {
     getAll: (params = {}) => api.get('/books/books/', { params }),
     getById: (id) => api.get(`/books/books/${id}/`),
@@ -13,8 +19,7 @@ export const catalogService = {
 }
 
 export const customerService = {
-    login: (credentials) => api.post('/customers/customers/login/', credentials),
-    register: (data) => api.post('/customers/customers/', data),
+    register: (data) => api.post('/customers/customers/register/', data),
     getProfile: (id) => api.get(`/customers/customers/${id}/`),
     updateProfile: (id, data) => api.patch(`/customers/customers/${id}/`, data),
 }

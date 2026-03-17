@@ -3,10 +3,10 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-api_gateway-secret-key-change-in-prod"
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-api_gateway-secret-key-change-in-prod")
+JWT_SECRET = os.environ.get("JWT_SECRET", "bookstore-jwt-secret-change-in-production")
 
 DEBUG = True
-
 ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
@@ -23,6 +23,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
+    "gateway.middleware.RateLimitMiddleware",
+    "gateway.middleware.RequestLoggingMiddleware",
+    "gateway.middleware.JWTAuthMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -51,8 +54,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "api_gateway.wsgi.application"
 
-# Database configuration - PostgreSQL when running in Docker, SQLite for local dev
-if os.environ.get('DB_HOST'):
+if os.environ.get("DB_HOST"):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -84,4 +86,28 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.AllowAny",
     ],
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json": {
+            "()": "django.utils.log.ServerFormatter",
+            "format": "%(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "json",
+        },
+    },
+    "loggers": {
+        "gateway": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
 }

@@ -1,5 +1,36 @@
 services:
+  # ─────────────────── Infrastructure ───────────────────
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=bookstore
+      - RABBITMQ_DEFAULT_PASS=bookstore
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # ─────────────────── PostgreSQL Databases ───────────────────
+  postgres-auth:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=auth_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres-auth-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   postgres-staff:
     image: postgres:15-alpine
     environment:
@@ -172,6 +203,32 @@ services:
     depends_on:
       - api-gateway
 
+  # ─────────────────── Auth Service ───────────────────
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "8012:8000"
+    environment:
+      - JWT_SECRET=bookstore-jwt-secret-change-in-production
+      - DB_HOST=postgres-auth
+      - DB_NAME=auth_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - CUSTOMER_SERVICE_URL=http://customer-service:8000
+      - STAFF_SERVICE_URL=http://staff-service:8000
+      - MANAGER_SERVICE_URL=http://manager-service:8000
+    depends_on:
+      postgres-auth:
+        condition: service_healthy
+      customer-service:
+        condition: service_started
+      staff-service:
+        condition: service_started
+      manager-service:
+        condition: service_started
+    volumes:
+      - auth-data:/app/data
+
   # ─────────────────── API Gateway ───────────────────
   api-gateway:
     build: ./api-gateway
@@ -189,7 +246,10 @@ services:
       - PAY_SERVICE_URL=http://pay-service:8000
       - COMMENT_SERVICE_URL=http://comment-rate-service:8000
       - RECOMMENDER_SERVICE_URL=http://recommender-ai-service:8000
+      - AUTH_SERVICE_URL=http://auth-service:8000
+      - JWT_SECRET=bookstore-jwt-secret-change-in-production
     depends_on:
+      - auth-service
       - staff-service
       - manager-service
       - customer-service
@@ -312,8 +372,7 @@ services:
     environment:
       - CART_SERVICE_URL=http://cart-service:8000
       - BOOK_SERVICE_URL=http://book-service:8000
-      - PAY_SERVICE_URL=http://pay-service:8000
-      - SHIP_SERVICE_URL=http://ship-service:8000
+      - RABBITMQ_URL=amqp://bookstore:bookstore@rabbitmq:5672/
       - DB_HOST=postgres-order
       - DB_NAME=order_db
       - DB_USER=postgres
@@ -323,10 +382,8 @@ services:
         condition: service_started
       book-service:
         condition: service_started
-      pay-service:
-        condition: service_started
-      ship-service:
-        condition: service_started
+      rabbitmq:
+        condition: service_healthy
       postgres-order:
         condition: service_healthy
     volumes:
@@ -338,12 +395,15 @@ services:
     ports:
       - "8008:8000"
     environment:
+      - RABBITMQ_URL=amqp://bookstore:bookstore@rabbitmq:5672/
       - DB_HOST=postgres-ship
       - DB_NAME=ship_db
       - DB_USER=postgres
       - DB_PASSWORD=postgres
     depends_on:
       postgres-ship:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
     volumes:
       - ship-data:/app/data
@@ -354,12 +414,15 @@ services:
     ports:
       - "8009:8000"
     environment:
+      - RABBITMQ_URL=amqp://bookstore:bookstore@rabbitmq:5672/
       - DB_HOST=postgres-pay
       - DB_NAME=pay_db
       - DB_USER=postgres
       - DB_PASSWORD=postgres
     depends_on:
       postgres-pay:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
     volumes:
       - pay-data:/app/data
@@ -403,6 +466,8 @@ services:
       - recommender-data:/app/data
 
 volumes:
+  rabbitmq-data:
+  postgres-auth-data:
   postgres-staff-data:
   postgres-manager-data:
   postgres-customer-data:
@@ -414,6 +479,7 @@ volumes:
   postgres-pay-data:
   postgres-comment-data:
   postgres-recommender-data:
+  auth-data:
   staff-data:
   manager-data:
   customer-data:
