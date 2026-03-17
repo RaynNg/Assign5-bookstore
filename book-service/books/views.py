@@ -1,5 +1,6 @@
 import os
 import requests
+from django.db.models import Q
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -14,6 +15,49 @@ class BookViewSet(viewsets.ModelViewSet):
     """Staff manages books (CRUD). All users can list/retrieve."""
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+
+    def get_queryset(self):
+        queryset = Book.objects.all()
+
+        catalog_id = self.request.query_params.get("catalog_id") or self.request.query_params.get("catalog")
+        if catalog_id:
+            queryset = queryset.filter(catalog_id=catalog_id)
+
+        search = self.request.query_params.get("search") or self.request.query_params.get("q")
+        if search:
+            queryset = queryset.filter(
+                Q(title__icontains=search)
+                | Q(author__icontains=search)
+                | Q(isbn__icontains=search)
+                | Q(description__icontains=search)
+            )
+
+        ordering = self.request.query_params.get("ordering")
+        if ordering:
+            allowed_fields = {
+                "id",
+                "title",
+                "author",
+                "price",
+                "stock",
+                "catalog_id",
+                "created_at",
+                "updated_at",
+            }
+
+            order_fields = []
+            for field in ordering.split(","):
+                field = field.strip()
+                if not field:
+                    continue
+                normalized = field[1:] if field.startswith("-") else field
+                if normalized in allowed_fields:
+                    order_fields.append(field)
+
+            if order_fields:
+                queryset = queryset.order_by(*order_fields)
+
+        return queryset
 
     @action(detail=False, methods=["get"])
     def by_catalog(self, request):
